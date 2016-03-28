@@ -1,0 +1,18 @@
+{
+  "name": "nypl-dish-search",
+  "version": "0.0.0",
+  "homepage": "https://github.com/csakai/nypl-dish-search",
+  "authors": [
+    "Chris Sakai <cs.chris.sakai@gmail.com>"
+  ],
+  "description": "A simple UI for viewing dishes and locations that serve them, fetched from the NYPL menus API",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.5.3",
+    "jquery": "^2.2.2",
+    "angular-bootstrap": "^1.2.5",
+    "lodash": "^4.6.1",
+    "angular-resource": "^1.5.3",
+    "bootstrap": "~3.3.6"
+  }
+}
