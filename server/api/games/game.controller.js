@@ -1,4 +1,5 @@
 var _ = require('lodash'),
+    config = require('../../config'),
     Game = require('./game.model');
 
 function GameCtrl(id) {
@@ -18,6 +19,39 @@ GameCtrl.prototype.newGame = function newGame() {
 GameCtrl.prototype.getGame = function getGame() {
     return Game.findById(this.id, '-__v');
 };
+
+function _alreadyMapped(board) {
+    var alreadyMapped = [];
+    _.forEach(board, function(val, key) {
+        _.forEach(val, function(v, k) {
+            if (v.match(/[HMS]/)) {
+                alreadyMapped.push(key+k);
+            }
+        });
+    });
+    return alreadyMapped;
+}
+function _randomCoords(count, alreadyMapped) {
+    return _(config.COORDS)
+        .reject(alreadyMapped)
+        .shuffle()
+        .take(count);
+}
+GameCtrl.placeShips = function placeShips(coords) {
+    return Game.findById(this.id, '-__v')
+        .then(function(data) {
+            data.board = {
+                name: 'player',
+                coordinates: coords
+            };
+            data.board = {
+                name: 'cpu',
+                coordinates: _randomCoords(10, [])
+            };
+        })
+};
+
+
 
 GameCtrl.prototype.endGame = function endGame() {
     var self = this;
