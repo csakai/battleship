@@ -1,13 +1,14 @@
 {
-  "name": "nypl-dish-search",
+  "name": "battleship",
   "version": "1.0.0",
-  "description": "A simple web app for searching for dishes and the locations that serve them, using the NYPL API",
+  "description": "A simple MEAN app for playing battleship.",
   "main": "./server/index.js",
   "dependencies": {
     "bluebird": "^3.3.4",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
-    "lodash": "^4.6.1"
+    "lodash": "^4.6.1",
+    "mongoose": "^4.4.10"
   },
   "devDependencies": {
     "bower": "^1.7.7",

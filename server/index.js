@@ -1,13 +1,25 @@
 /*jshint node:true*/
 'use strict';
 
-var config = require('config'),
-    express = require('express'),
+var express = require('express'),
     bodyParser = require('body-parser'),
+    mongoose = require('mongoose'),
     path = require('path'),
     app = express(),
     port = process.env.PORT || 8000,
     routes;
+
+mongoose.connect('mongodb://localhost/battleship', {
+    db: {
+        safe: true
+    }
+});
+
+mongoose.connection.on('error', function(err) {
+    console.error('MongoDB connection error: ' + err);
+    process.exit(1);
+    }
+);
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
