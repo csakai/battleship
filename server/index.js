@@ -9,6 +9,8 @@ var express = require('express'),
     port = process.env.PORT || 8000,
     routes;
 
+mongoose.Promise = require('bluebird');
+
 mongoose.connect('mongodb://localhost/battleship', {
     db: {
         safe: true
