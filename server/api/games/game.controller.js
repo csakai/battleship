@@ -37,7 +37,7 @@ function _randomCoords(count, alreadyMapped) {
         .shuffle()
         .take(count);
 }
-GameCtrl.placeShips = function placeShips(coords) {
+GameCtrl.prototype.placeShips = function placeShips(coords) {
     return Game.findById(this.id, '-__v')
         .then(function(data) {
             data.board = {
@@ -48,10 +48,28 @@ GameCtrl.placeShips = function placeShips(coords) {
                 name: 'cpu',
                 coordinates: _randomCoords(10, [])
             };
-        })
+            return data.save();
+        });
 };
 
+GameCtrl.prototype.getShips = function getShips() {
+    return Game.findById(this.id, '-__v');
+};
 
+GameCtrl.prototype.move = function move(coord) {
+    return Game.findById(this.id, '-__v')
+        .then(function(data) {
+            return data.playerMove(coord);
+        });
+};
+
+GameCtrl.prototype.getMove = function getMove() {
+    return Game.findById(this.id, '-__v')
+        .then(function(data) {
+            var alreadyMapped = _alreadyMapped(data.playerBoard);
+            return data.cpuMove(_randomCoords(1, alreadyMapped));
+        });
+};
 
 GameCtrl.prototype.endGame = function endGame() {
     var self = this;

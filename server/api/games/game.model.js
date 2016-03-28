@@ -1,3 +1,4 @@
+var Bluebird = require('bluebird');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var _ = require('lodash');
@@ -34,10 +35,11 @@ function coordinateMapper(coords) {
 
 GameSchema
     .virtual('move')
-    .set(function(coordinates) {
-        var val,
+    .set(function(coordObj) {
+        var coordinates = coordObj.coords,
+            val,
             newVal,
-            path = 'cpuBoard.';
+            path = coordObj.name + '.';
         path += coordinateMapper(coordinates)
         //Will be "S" for ship or '' for nothing
         val = _.get(this, path);
@@ -62,5 +64,31 @@ GameSchema
         this._path = coordObj.name + '.';
         coordArr.forEach(placeShip, this);
     });
+
+/**
+ * Methods
+ */
+
+function _constructMoveMethod(name) {
+    var self = this;
+    return function move(coord) {
+        return new Bluebird(function(resolve, reject) {
+            var coordObj = {
+                name: name,
+                coords: coord
+            };
+            self.move = coordObj;
+            return self.save();
+        });
+    };
+}
+
+GameSchema
+    .methods
+    .cpuMove = _constructMoveMethod.call(GameSchema, 'player');
+
+GameSchema
+    .methods
+    .playerMove = _constructMoveMethod.call(GameSchema, 'cpu');
 
 module.exports = mongoose.model('Game', GameSchema);
