@@ -35,7 +35,7 @@ router
     .post(function(req, res, next) {
         var id = req.params.id;
         var ctrl = new GameCtrl(id);
-        var coords = req.query.coords;
+        var coords = req.body.coords;
         ctrl.placeShips(coords)
             .then(function(payload) {
                 res.status(201).json(payload);

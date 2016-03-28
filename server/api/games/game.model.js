@@ -39,7 +39,7 @@ GameSchema
         var coordinates = coordObj.coords,
             val,
             newVal,
-            path = coordObj.name + '.';
+            path = coordObj.name + 'Board.';
         path += coordinateMapper(coordinates)
         //Will be "S" for ship or '' for nothing
         val = _.get(this, path);
@@ -61,7 +61,7 @@ GameSchema
     .virtual('board')
     .set(function(coordObj) {
         var coordArr = _.map(coordObj.coordinates, coordinateMapper);
-        this._path = coordObj.name + '.';
+        this._path = coordObj.name + 'Board.';
         coordArr.forEach(placeShip, this);
     });
 

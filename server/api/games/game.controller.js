@@ -35,7 +35,8 @@ function _randomCoords(count, alreadyMapped) {
     return _(config.COORDS)
         .reject(alreadyMapped)
         .shuffle()
-        .take(count);
+        .take(count)
+        .value();
 }
 GameCtrl.prototype.placeShips = function placeShips(coords) {
     return Game.findById(this.id, '-__v')
