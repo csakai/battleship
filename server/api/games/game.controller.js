@@ -55,10 +55,11 @@ GameCtrl.prototype.endGame = function endGame() {
 GameCtrl.prototype.applyMoveFn = function applyMove(name) {
     return function applyMove(data) {
         var updateDoc = {};
+        var testObj = data.toObject();
         if (!name) {
             updateDoc.active = false;
             updateDoc.win = false;
-        } else if (_tenHits(data[name+'Board'])) {
+        } else if (_tenHits(testObj[name+'Board'])) {
             updateDoc.active = false;
             updateDoc.win = ('cpu' === name);
         }
@@ -71,7 +72,9 @@ module.exports = GameCtrl;
 
 function _getCoords(board, test) {
     var alreadyMapped = [];
-    test = test || /[HMS]/
+    if (!test) {
+        test = /[HMS]/
+    }
     _.forEach(board, function(val, key) {
         _.forEach(val, function(v, k) {
             if (v.match(test)) {

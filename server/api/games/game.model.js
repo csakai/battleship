@@ -47,8 +47,8 @@ module.exports = mongoose.model('Game', GameSchema);
 
 
 function _constructBoardSetMethod(name) {
-    var self = this;
     return function setBoard(coords) {
+        var self = this;
         return new Bluebird(function setBoardPromise(resolve, reject) {
             var coordArr = _.map(coords, _coordMapFn(name));
             coordArr.forEach(_placeShip, self);
@@ -57,8 +57,8 @@ function _constructBoardSetMethod(name) {
     };
 }
 function _constructMoveMethod(name) {
-    var self = this;
     return function move(coord) {
+        var self = this;
         return new Bluebird(function movePromise(resolve, reject) {
             var path = _getPath(name, coord),
                 coordObj = {
