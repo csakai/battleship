@@ -1,5 +1,5 @@
 var _ = require('lodash'),
-    config = require('../../config'),
+    util = require('../../util/board_util'),
     Game = require('./game.model');
 
 function GameCtrl(id) {
@@ -25,7 +25,7 @@ GameCtrl.prototype.placeShips = function placeShips(coords) {
         .then(function(data) {
             return data.setPlayerBoard(coords);
         }).then(function(data) {
-            return data.setCpuBoard(_randomCoords(10, []));
+            return data.setCpuBoard(util.randomCoords());
         }).then(function(data) {
             return data.save();
         });
@@ -41,8 +41,7 @@ GameCtrl.prototype.move = function move(coord) {
 GameCtrl.prototype.cpuMove = function getMove() {
     return Game.findById(this.id, '-__v')
         .then(function(data) {
-            var alreadyMapped = _getCoords(data.playerBoard);
-            return data.cpuMove(_randomCoords(1, alreadyMapped));
+            return data.cpuMove(util.randomCoords(data.playerBoard));
         }).then(this.applyMoveFn('player'));
 };
 
@@ -58,7 +57,7 @@ GameCtrl.prototype.applyMoveFn = function applyMove(name) {
         if (!name) {
             updateDoc.active = false;
             updateDoc.win = false;
-        } else if (_tenHits(data[name+'Board'])) {
+        } else if (util.tenHits(data[name+'Board'])) {
             updateDoc.active = false;
             updateDoc.win = ('cpu' === name);
         }
@@ -68,32 +67,3 @@ GameCtrl.prototype.applyMoveFn = function applyMove(name) {
 }
 
 module.exports = GameCtrl;
-
-function _getCoords(board, test) {
-    var testObj = board.toObject();
-    var alreadyMapped = [];
-    if (!test) {
-        test = /[HM]/;
-    }
-    _.forEach(testObj, function(val, key) {
-        _.forEach(val, function(v, k) {
-            if (v.match(test)) {
-                alreadyMapped.push(key+k);
-            }
-        });
-    });
-    return alreadyMapped;
-}
-
-function _tenHits(board) {
-    var hitCount = _getCoords(board, 'H').length;
-    return hitCount === 10;
-}
-
-function _randomCoords(count, alreadyMapped) {
-    return _(config.COORDS)
-        .difference(alreadyMapped)
-        .shuffle()
-        .take(count)
-        .value();
-}

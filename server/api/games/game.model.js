@@ -2,6 +2,7 @@ var Bluebird = require('bluebird');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var _ = require('lodash');
+var util = require('../../util/board_util');
 
 var RowSchema = new Schema({
     a: { type: String, default: ''},
@@ -64,13 +65,19 @@ function _constructMoveMethod(name) {
                 val = _.get(self, path),
                 error;
             //val will be "S" for ship or '' for nothing
-            if (val.match(/[HM]/)) {
-                error = new Error('Repeated Move');
-                error.status = 400;
-                reject(error)
+            if (util.okToMove(self, (name === 'cpu'))) {
+                if (val && val.match(/[HM]/)) {
+                    error = new Error('Repeated Move');
+                    error.status = 400;
+                    reject(error);
+                } else {
+                    _.set(self, path, _newVal(val));
+                    resolve(self);
+                }
             } else {
-                _.set(self, path, _newVal(val));
-                resolve(self);
+                error = new Error('Improper Turn');
+                error.status = 400;
+                reject(error);
             }
         });
     };
