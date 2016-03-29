@@ -55,11 +55,10 @@ GameCtrl.prototype.endGame = function endGame() {
 GameCtrl.prototype.applyMoveFn = function applyMove(name) {
     return function applyMove(data) {
         var updateDoc = {};
-        var testObj = data.toObject();
         if (!name) {
             updateDoc.active = false;
             updateDoc.win = false;
-        } else if (_tenHits(testObj[name+'Board'])) {
+        } else if (_tenHits(data[name+'Board'])) {
             updateDoc.active = false;
             updateDoc.win = ('cpu' === name);
         }
@@ -71,11 +70,12 @@ GameCtrl.prototype.applyMoveFn = function applyMove(name) {
 module.exports = GameCtrl;
 
 function _getCoords(board, test) {
+    var testObj = board.toObject();
     var alreadyMapped = [];
     if (!test) {
-        test = /[HMS]/
+        test = /[HM]/
     }
-    _.forEach(board, function(val, key) {
+    _.forEach(testObj, function(val, key) {
         _.forEach(val, function(v, k) {
             if (v.match(test)) {
                 alreadyMapped.push(key+k);
@@ -92,7 +92,7 @@ function _tenHits(board) {
 
 function _randomCoords(count, alreadyMapped) {
     return _(config.COORDS)
-        .reject(alreadyMapped)
+        .difference(alreadyMapped)
         .shuffle()
         .take(count)
         .value();
