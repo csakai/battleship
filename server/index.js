@@ -25,7 +25,6 @@ mongoose.connection.on('error', function(err) {
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(require('./util/error_handler'));
 routes = require('./routes');
 
 app.get('/ping', function(req, res, next) {
@@ -37,6 +36,7 @@ app.use("/assets", express.static(path.resolve(__dirname + "/../client/assets"))
 app.use("/bower_components", express.static(path.resolve(__dirname + "/../bower_components/")));
 
 app.use("/api", routes);
+app.use(require('./util/error_handler'));
 app.get("/*", function (req, res) {
     res.sendFile(path.resolve(__dirname + "/../client/index.html"));
 });

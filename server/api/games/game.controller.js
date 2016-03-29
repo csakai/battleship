@@ -73,7 +73,7 @@ function _getCoords(board, test) {
     var testObj = board.toObject();
     var alreadyMapped = [];
     if (!test) {
-        test = /[HM]/
+        test = /[HM]/;
     }
     _.forEach(testObj, function(val, key) {
         _.forEach(val, function(v, k) {

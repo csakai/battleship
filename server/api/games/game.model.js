@@ -61,14 +61,17 @@ function _constructMoveMethod(name) {
         var self = this;
         return new Bluebird(function movePromise(resolve, reject) {
             var path = _getPath(name, coord),
-                coordObj = {
-                    name: name,
-                    coords: coord
-                },
-                val = _.get(self, path);
+                val = _.get(self, path),
+                error;
             //val will be "S" for ship or '' for nothing
-            _.set(self, path, _newVal(val));
-            resolve(self);
+            if (val.match(/[HM]/)) {
+                error = new Error('Repeated Move');
+                error.status = 400;
+                reject(error)
+            } else {
+                _.set(self, path, _newVal(val));
+                resolve(self);
+            }
         });
     };
 }
