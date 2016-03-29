@@ -2,10 +2,19 @@ var GameCtrl = require('./game.controller');
 var express = require('express');
 var router = express.Router();
 
+function _serviceReq(req, method, paramRequired) {
+    var ctrl = new GameCtrl(req.params.id);
+    var param;
+    if (paramRequired) {
+        param = req.body.coords;
+    }
+    return ctrl[method](param);
+}
+
+
 router
     .put('/', function(req, res, next) {
-        var ctrl = new GameCtrl();
-        ctrl.newGame()
+        _serviceReq(req, 'newGame')
             .then(function(payload) {
                 res.status(201).json(payload);
             }).catch(next);
@@ -14,17 +23,13 @@ router
 router
     .route('/:id')
     .get(function(req, res, next) {
-        var id = req.params.id;
-        var ctrl = new GameCtrl(id);
-        ctrl.getGame()
+        _serviceReq(req, 'getGame')
             .then(function(payload) {
                 res.status(200).json(payload);
             }).catch(next);
     })
     .delete(function(req, res, next) {
-        var id = req.params.id;
-        var ctrl = new GameCtrl(id);
-        ctrl.endGame()
+        _serviceReq(req, 'endGame')
             .then(function(payload) {
                 res.status(200).json(payload);
             }).catch(next);
@@ -33,38 +38,24 @@ router
 router
     .route('/:id/ships')
     .post(function(req, res, next) {
-        var id = req.params.id;
-        var ctrl = new GameCtrl(id);
-        var coords = req.body.coords;
-        ctrl.placeShips(coords)
+        _serviceReq(req, 'placeShips', true)
             .then(function(payload) {
                 res.status(201).json(payload);
-            }).catch(next);
-    })
-    .get(function(req, res, next) {
-        var id = req.params.id;
-        var ctrl = new GameCtrl(id);
-        ctrl.getShips()
-            .then(function(payload) {
-                res.status(200).json(payload);
             }).catch(next);
     });
 
 router
     .route('/:id/move')
     .post(function(req, res, next) {
-        var id = req.params.id;
-        var ctrl = new GameCtrl(id);
-        var coord = req.body.coord;
-        ctrl.move(coord)
+        _serviceReq(req, 'move', true)
             .then(function(payload) {
                 res.status(200).json(payload);
             }).catch(next);
     })
-    .get(function(req, res, next) {
-        var id = req.params.id;
-        var ctrl = new GameCtrl(id);
-        ctr.getMove()
+router
+    .route('/:id/cpu_move')
+    .post(function(req, res, next) {
+        _serviceReq(req, 'cpuMove')
             .then(function(payload) {
                 res.status(200).json(payload);
             }).catch(next);

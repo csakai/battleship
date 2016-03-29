@@ -25,63 +25,15 @@ var GameSchema = new Schema({
     active: { type: Boolean, default: true },
     win: Boolean
 });
-
-/**
- * Virtuals
- */
-function coordinateMapper(coords) {
-    return coords.split('').join('.');
-}
-
-GameSchema
-    .virtual('move')
-    .set(function(coordObj) {
-        var coordinates = coordObj.coords,
-            val,
-            newVal,
-            path = coordObj.name + 'Board.';
-        path += coordinateMapper(coordinates)
-        //Will be "S" for ship or '' for nothing
-        val = _.get(this, path);
-        if (val === 'S') {
-            //HIT!
-            newVal = 'H';
-        }  else {
-            //MISS!
-            newVal = 'M';
-        }
-        _.set(this, path, newVal);
-    });
-
-function placeShip(coord) {
-    _.set(this, (this._path + coord), 'S');
-}
-
-GameSchema
-    .virtual('board')
-    .set(function(coordObj) {
-        var coordArr = _.map(coordObj.coordinates, coordinateMapper);
-        this._path = coordObj.name + 'Board.';
-        coordArr.forEach(placeShip, this);
-    });
-
 /**
  * Methods
  */
-
-function _constructMoveMethod(name) {
-    var self = this;
-    return function move(coord) {
-        return new Bluebird(function(resolve, reject) {
-            var coordObj = {
-                name: name,
-                coords: coord
-            };
-            self.move = coordObj;
-            return self.save();
-        });
-    };
-}
+GameSchema
+    .methods
+    .setCpuBoard = _constructBoardSetMethod.call(GameSchema, 'cpu');
+GameSchema
+    .methods
+    .setPlayerBoard = _constructBoardSetMethod.call(GameSchema, 'player');
 
 GameSchema
     .methods
@@ -92,3 +44,52 @@ GameSchema
     .playerMove = _constructMoveMethod.call(GameSchema, 'cpu');
 
 module.exports = mongoose.model('Game', GameSchema);
+
+
+function _constructBoardSetMethod(name) {
+    var self = this;
+    return function setBoard(coords) {
+        return new Bluebird(function setBoardPromise(resolve, reject) {
+            var coordArr = _.map(coords, _coordMapFn(name));
+            coordArr.forEach(_placeShip, self);
+            resolve(self);
+        });
+    };
+}
+function _constructMoveMethod(name) {
+    var self = this;
+    return function move(coord) {
+        return new Bluebird(function movePromise(resolve, reject) {
+            var path = _getPath(name, coord),
+                coordObj = {
+                    name: name,
+                    coords: coord
+                },
+                val = _.get(self, path);
+            //val will be "S" for ship or '' for nothing
+            _.set(self, path, _newVal(val));
+            resolve(self);
+        });
+    };
+}
+
+function _newVal(val) {
+    //H for Hit! M for Miss!
+    return val === 'S'
+     ? 'H'
+     : 'M';
+ }
+
+function _getPath(name, coords) {
+    return _(coords)
+        .split('')
+        .tap(function(arr){
+            arr.splice(0, 0, name+"Board");
+        }).join('.');
+}
+
+var _coordMapFn = _.curry(_getPath);
+
+function _placeShip(path) {
+    _.set(this, path, 'S');
+}
