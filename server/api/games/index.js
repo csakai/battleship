@@ -1,19 +1,28 @@
 var GameCtrl = require('./game.controller');
 var express = require('express');
 var router = express.Router();
+var util = require('../../util/board_util');
 
-function _serviceReq(req, method, paramRequired) {
+function _serviceReq(req, method, paramName) {
     var ctrl = new GameCtrl(req.params.id);
     var param;
-    if (paramRequired) {
-        param = req.body.coords;
+    if (paramName) {
+        param = _.get(req, paramName);
     }
-    return ctrl[method](param);
+    return ctrl[method](param)
+        .then(util.prepGameViewForClient);
 }
 
 
 router
-    .put('/', function(req, res, next) {
+    .route('/')
+    .get(function(req, res, next) {
+        _serviceReq(req, 'index', 'body')
+            .then(function(payload) {
+                res.status(200).json(payload);
+            }).catch(next);
+    })
+    .put(function(req, res, next) {
         _serviceReq(req, 'newGame')
             .then(function(payload) {
                 res.status(201).json(payload);
@@ -38,7 +47,7 @@ router
 router
     .route('/:id/ships')
     .post(function(req, res, next) {
-        _serviceReq(req, 'placeShips', true)
+        _serviceReq(req, 'placeShips', 'body.coords')
             .then(function(payload) {
                 res.status(201).json(payload);
             }).catch(next);
@@ -47,7 +56,7 @@ router
 router
     .route('/:id/move')
     .post(function(req, res, next) {
-        _serviceReq(req, 'move', true)
+        _serviceReq(req, 'move', 'body.coords')
             .then(function(payload) {
                 res.status(200).json(payload);
             }).catch(next);

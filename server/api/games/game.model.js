@@ -51,7 +51,7 @@ function _constructBoardSetMethod(name) {
     return function setBoard(coords) {
         var self = this;
         return new Bluebird(function setBoardPromise(resolve, reject) {
-            var coordArr = _.map(coords, _coordMapFn(name));
+            var coordArr = _.map(coords, util.coordMapFn(name));
             coordArr.forEach(_placeShip, self);
             resolve(self);
         });
@@ -61,21 +61,22 @@ function _constructMoveMethod(name) {
     return function move(coord) {
         var self = this;
         return new Bluebird(function movePromise(resolve, reject) {
-            var path = _getPath(name, coord),
+            var path = util.getPath(name, coord),
+                //path to the board coordinate using dot notation
                 val = _.get(self, path),
+                //val will be "S" for ship or '' for nothing
+                notFiredAt = !val || val === 'S',
+                //indicates an empty space or ship
+                properTurn = util.okToMove(self, (name === 'cpu')),
+                //see util.okToMove method comment
                 error;
-            //val will be "S" for ship or '' for nothing
-            if (util.okToMove(self, (name === 'cpu'))) {
-                if (val && val.match(/[HM]/)) {
-                    error = new Error('Repeated Move');
-                    error.status = 400;
-                    reject(error);
-                } else {
-                    _.set(self, path, _newVal(val));
-                    resolve(self);
-                }
+            if (properTurn && notFiredAt) {
+                _.set(self, path, _newVal(val));
+                resolve(self);
             } else {
-                error = new Error('Improper Turn');
+                error = new Error(!notFiredAt
+                 ? 'Repeated Move'
+                 : 'Improper Turn');
                 error.status = 400;
                 reject(error);
             }
@@ -89,16 +90,6 @@ function _newVal(val) {
      ? 'H'
      : 'M';
  }
-
-function _getPath(name, coords) {
-    return _(coords)
-        .split('')
-        .tap(function(arr){
-            arr.splice(0, 0, name+"Board");
-        }).join('.');
-}
-
-var _coordMapFn = _.curry(_getPath);
 
 function _placeShip(path) {
     _.set(this, path, 'S');

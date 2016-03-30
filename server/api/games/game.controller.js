@@ -8,6 +8,10 @@ function GameCtrl(id) {
     }
 }
 
+GameCtrl.prototype.index = function index(query) {
+    return Game.find(query, '-__v -cpuBoard -playerBoard');
+};
+
 GameCtrl.prototype.newGame = function newGame() {
     var game = new Game();
     return game.save()

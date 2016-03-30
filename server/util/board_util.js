@@ -1,6 +1,21 @@
 var _ = require('lodash'),
     config = require('../config');
 
+//creates the path to the booard coordinate using the board name
+//and coordinates.
+function getPath(name, coords) {
+    return _(coords)
+        .split('')
+        .tap(function(arr){
+            arr.splice(0, 0, name+"Board");
+        }).join('.');
+}
+
+//creates a curried version of getPath that
+//can be used as a composable function, accepting
+//the name, and returning a function that accepts coords
+var coordMapFn = _.curry(getPath);
+
 function getCoords(board, test) {
     var testObj = board.toObject();
     var alreadyMapped = [];
@@ -35,6 +50,11 @@ function randomCoords(playerBoard) {
         alreadyMapped = getCoords(playerBoard);
         count = 1;
     }
+    // Wraps config.COORDS array in a lodash wrapper
+    // Removes the already mapped coordinates from the array,
+    // Randomizes the order of the array,
+    // Returns *count* from the start of the array
+    // Explicitly returns the array within the lodash wrapper
     return _(config.COORDS)
         .difference(alreadyMapped)
         .shuffle()
@@ -55,9 +75,24 @@ function okToMove(game, playerTurn) {
     return testValue === offset;
 }
 
+function prepGameViewForClient(game) {
+    var clientGame = game.toObject(),
+        shipCoords;
+    if (game.cpuBoard) {
+        shipCoords = getCoords(game.cpuBoard, 'S');
+        _.forEach(shipCoords, function(coord) {
+            _.unset(clientGame, getPath('cpu', coord));
+        });
+    }
+    return clientGame;
+}
+
 module.exports = {
+    getPath: getPath,
+    coordMapFn: coordMapFn,
     getCoords: getCoords,
     randomCoords: randomCoords,
     okToMove: okToMove,
+    prepGameViewForClient: prepGameViewForClient,
     tenHits: tenHits
 };
