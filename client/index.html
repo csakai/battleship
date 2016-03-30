@@ -1,10 +1,11 @@
 <html ng-app="battleship">
     <head>
-        <title>NYPL Dish Search</title>
+        <title>Battleship</title>
         <link href="/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
         <!-- bower:css -->
         <!-- endbower -->
         <!-- inject:css -->
+        <link href="/assets/styles/index.css" rel="stylesheet">
         <!-- endinject -->
     </head>
     <body ng-controller="initCtrl" ng-cloak>
@@ -26,7 +27,7 @@
                     </form>
                 </div>
             </div>
-            <ng-include src="/src/app/game/board.html"></ng-include>
+            <ng-include src="'/src/game/game_container.html'"></ng-include>
         </div>
 
         <!-- bower:js -->
@@ -39,6 +40,10 @@
         <!-- endbower -->
         <!-- inject:js -->
         <script src="/src/app.js"></script>
+        <script src="/src/game/game.service.js"></script>
+        <script src="/src/game/init.controller.js"></script>
+        <script src="/src/game/game.controller.js"></script>
+        <script src="/src/game/board.directive.js"></script>
         <!-- endinject -->
     </body>
     </html>
