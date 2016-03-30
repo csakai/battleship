@@ -4,27 +4,16 @@ var Schema = mongoose.Schema;
 var _ = require('lodash');
 var util = require('../../util/board_util');
 
-var RowSchema = new Schema({
-    a: { type: String, default: ''},
-    b: { type: String, default: ''},
-    c: { type: String, default: ''},
-    d: { type: String, default: ''},
-    e: { type: String, default: ''}
-});
-
-var BoardSchema = new Schema({
-    a: RowSchema,
-    b: RowSchema,
-    c: RowSchema,
-    d: RowSchema,
-    e: RowSchema
-});
+var defaultBoard = require('../../config').DEFAULT_BOARD;
 
 var GameSchema = new Schema({
-    playerBoard: BoardSchema,
-    cpuBoard: BoardSchema,
+    playerBoard: { type: Object, default: defaultBoard },
+    cpuBoard: { type: Object, default: defaultBoard },
     active: { type: Boolean, default: true },
     win: Boolean
+}, {
+    minimize: false,
+    versionKey: false
 });
 /**
  * Methods
