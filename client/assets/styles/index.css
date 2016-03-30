@@ -1,0 +1,29 @@
+.coords {
+    background-color: grey;
+    border: 1px solid black;
+    height: 100px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    text-align: center;
+}
+.box {
+    background-color: blue;
+    border: 1px solid black;
+    height: 100px
+}
+
+.box.box-ship {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(/assets/img/ship.gif);
+}
+.box.box-hit {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(/assets/img/hit.png);
+}
+.box.box-miss {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(/assets/img/miss.png);
+}
