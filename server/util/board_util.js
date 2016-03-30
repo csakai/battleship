@@ -17,7 +17,10 @@ function getPath(name, coords) {
 var coordMapFn = _.curry(getPath);
 
 function getCoords(board, test) {
-    var testObj = board.toObject();
+    var testObj = board;
+    if (_.isFunction(board.toObject)) {
+        testObj = board.toObject();
+    }
     var alreadyMapped = [];
     if (!test) {
         test = /[HM]/;
