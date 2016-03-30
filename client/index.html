@@ -7,7 +7,28 @@
         <!-- inject:css -->
         <!-- endinject -->
     </head>
-    <body ng-cloak>
+    <body ng-controller="initCtrl" ng-cloak>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-inline" name="getGameForm" ng-submit="getGame()">
+                        <div class="form-group">
+                            <label for="gameId">Game ID: </label>
+                            <input class="form-control"
+                                id="gameId"
+                                ng-model="gameId"
+                                type="text" />
+                        </div>
+                        <button class="btn btn-primary"
+                            type="submit">
+                            Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <ng-include src="/src/app/game/board.html"></ng-include>
+        </div>
+
         <!-- bower:js -->
         <script src="/bower_components/angular/angular.js"></script>
         <script src="/bower_components/jquery/dist/jquery.js"></script>

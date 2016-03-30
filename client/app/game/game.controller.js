@@ -3,13 +3,17 @@
     app.controller('gameCtrl', ['gameService', gameCtrl]);
     function gameCtrl(gameService) {
         var vm = this;
-
+        var startingCoords = [];
         vm.endGame = function() {
             gameService.endGame();
         };
 
         vm.newGame = function() {
-            gameService.newGame();
+            gameService.newGame()
+                .then(function(data) {
+                    vm.id = data._id;
+                    return vm.id;
+                });
         };
 
         vm.setBoard = function(coords) {
@@ -44,14 +48,29 @@
         function _handleError(err) {
             var modal = /*placeholder*/
             if (!err.status) {
-
-            }
-            if (err.data === 'win') {
-
+                return gameModalService
+                    .message(err.data);
+            } else if (err.status === 500) {
+                return gameModalService
+                    .message(err.data)
+                    .
             }
         }
 
-        vm.move = function(coords) {
+        vm.addCoord = function(row, col) {
+            var coords = gameService.getCoords(row, col);
+            var index = _.indexOf(startingCoords, coords);
+            if (index > -1) {
+                startingCoords.splice(index, 0);
+                vm.playerBoard[row][col] = '';
+            } else {
+                startingCoords.push(coords);
+                vm.playerBoard[row][col] = 'S';
+            }
+        };
+
+        vm.move = function(row, col) {
+            var coords = gameService.getCoords(row, col);
             _setCpuTurn();
             gameService.move(coords)
                 .then(function(data) {
@@ -77,7 +96,7 @@
                         return;
                     }
                 })
-                .catch(gameService.handleError)
+                .catch(_handleError)
         }
 
     }

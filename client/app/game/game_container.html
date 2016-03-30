@@ -1,0 +1,37 @@
+<div class="container" ng-controller="gameCtrl as game">
+    <div class="row">
+        <div class="col-md-6">
+            <board name="cpu"
+                func="game.move(row, col)"
+                data="game.cpuBoard"
+                clickable="game.boardSet && !game.turn">
+            </board>
+        </div>
+        <div class="col-md-6">
+            <board name="player"
+                func="game.addCoord(row, col)"
+                data="game.playerBoard"
+                clickable="!game.boardSet">
+            </board>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="btn-group">
+            <button class="btn btn-danger"
+                ng-click="game.endGame()">
+                Surrender!
+            </button>
+            <button class="btn btn-success"
+                ng-click="game.setBoard()"
+                ng-disabled="game.gameSet">
+                Set Board
+            </button>
+            <button class="btn btn-warning"
+                ng-click="game.requestCpuMove()"
+                ng-disabled="game.turn && !game.error">
+                Resend CPU move request
+            </button>
+        </div>
+    </div>
+</div>

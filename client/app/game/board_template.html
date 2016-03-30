@@ -1,0 +1,26 @@
+<h2>{{name}}</h2>
+<div class="row board"
+    ng-init="rowIndex = $index"
+    ng-repeat="row in data track by $index">
+    <div class="col-md-1 coords">
+        {{rowIndex}}
+    </div>
+    <div class="col-md-2 box"
+        ng-class="{
+            'box-ship': (box==='S'),
+            'box-miss': (box==='M'),
+            'box-hit': (box==='H')
+        }"
+        ng-repeat="box in row track by $index"
+        ng-click="func({row: rowIndex, col: $index})"
+        ng-disabled="!clickable">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2 col-md-offset-1 coords">
+        A
+    </div>
+    <div class="col-md-2 coords"
+        ng-repeat="coord in ['B', 'C', 'D', 'E']">
+    </div>
+</div>
