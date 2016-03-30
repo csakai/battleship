@@ -1,7 +1,7 @@
 (function() {
     var app = angular.module('battleship');
-    app.controller('gameCtrl', ['gameService', gameCtrl]);
-    function gameCtrl(gameService) {
+    app.controller('gameCtrl', ['$scope', 'gameService', gameCtrl]);
+    function gameCtrl($scope, gameService) {
         var vm = this;
         var startingCoords = [];
         vm.endGame = function() {
@@ -11,9 +11,9 @@
         vm.newGame = function() {
             gameService.newGame()
                 .then(function(data) {
-                    vm.id = data._id;
-                    return vm.id;
-                });
+                    $scope.id = data._id;
+                    return data;
+                }).then($scope.getGame);
         };
 
         vm.setBoard = function(coords) {
@@ -46,14 +46,18 @@
         }
 
         function _handleError(err) {
-            var modal = /*placeholder*/
+            // var modal = /*placeholder*/
             if (!err.status) {
-                return gameModalService
-                    .message(err.data);
+                console.log('The game state changed.');
+                console.log('You ' + (err.data.win ? 'won!' : 'lost!'));
+                // return gameModalService
+                //     .message(err.data);
             } else if (err.status === 500) {
-                return gameModalService
-                    .message(err.data)
-                    .
+                console.log('an error occurred');
+                console.log(err);
+                // return gameModalService
+                //     .message(err.data)
+                //     .
             }
         }
 
@@ -62,32 +66,19 @@
             var index = _.indexOf(startingCoords, coords);
             if (index > -1) {
                 startingCoords.splice(index, 0);
-                vm.playerBoard[row][col] = '';
+                $scope.playerBoard[row][col] = '';
             } else {
                 startingCoords.push(coords);
-                vm.playerBoard[row][col] = 'S';
+                $scope.playerBoard[row][col] = 'S';
             }
         };
 
-        vm.move = function(row, col) {
-            var coords = gameService.getCoords(row, col);
-            _setCpuTurn();
-            gameService.move(coords)
-                .then(function(data) {
-                    vm.win = data.win;
-                    _.merge(vm.cpuBoard, data.cpuBoard);
-                    if (vm.win) {
-                        throw {
-                            data: "win"
-                        };
-                    } else {
-                        return;
-                    }
-                }).then(gameService.cpuMove)
+        vm.requestCpuMove = function() {
+            return gameService.cpuMove()
                 .then(_setPlayerTurn)
                 .then(function(data) {
                     vm.win = data.win;
-                    _.merge(vm.playerBoard, data.playerBoard);
+                    $scope.playerBoard[data.row][data.col] = data.result;
                     if (_.isBoolean(vm.win) && !vm.win) {
                         throw {
                             data: "lose"
@@ -95,8 +86,25 @@
                     } else {
                         return;
                     }
-                })
-                .catch(_handleError)
+                }).catch(_handleError);
+        }
+
+        vm.move = function(row, col) {
+            var coords = gameService.getCoords(row, col);
+            _setCpuTurn();
+            gameService.move(coords)
+                .then(function(data) {
+                    vm.win = data.win;
+                    $scope.cpuBoard[row][col] = data.result;
+                    if (vm.win) {
+                        throw {
+                            data: "win"
+                        };
+                    } else {
+                        return;
+                    }
+                }).then(vm.requestCpuMove)
+                .catch(_handleError);
         }
 
     }
