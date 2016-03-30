@@ -9,23 +9,23 @@ function GameCtrl(id) {
 }
 
 GameCtrl.prototype.index = function index(query) {
-    return Game.find(query, '-__v -cpuBoard -playerBoard');
+    return Game.find(query, '-cpuBoard -playerBoard');
 };
 
 GameCtrl.prototype.newGame = function newGame() {
     var game = new Game();
     return game.save()
         .then(function(data) {
-            return _.omit(data.toObject(), '__v');
+            return data;
         });
 };
 
 GameCtrl.prototype.getGame = function getGame() {
-    return Game.findById(this.id, '-__v');
+    return Game.findById(this.id);
 };
 
 GameCtrl.prototype.placeShips = function placeShips(coords) {
-    return Game.findById(this.id, '-__v')
+    return Game.findById(this.id)
         .then(function(data) {
             return data.setPlayerBoard(coords);
         }).then(function(data) {
@@ -36,14 +36,14 @@ GameCtrl.prototype.placeShips = function placeShips(coords) {
 };
 
 GameCtrl.prototype.move = function move(coord) {
-    return Game.findById(this.id, '-__v')
+    return Game.findById(this.id)
         .then(function(data) {
             return data.playerMove(coord);
         }).then(this.applyMoveFn('cpu'));
 };
 
 GameCtrl.prototype.cpuMove = function getMove() {
-    return Game.findById(this.id, '-__v')
+    return Game.findById(this.id)
         .then(function(data) {
             return data.cpuMove(util.randomCoords(data.playerBoard));
         }).then(this.applyMoveFn('player'));
@@ -51,7 +51,7 @@ GameCtrl.prototype.cpuMove = function getMove() {
 
 GameCtrl.prototype.endGame = function endGame() {
     var self = this;
-    return Game.findById(this.id, '-__v')
+    return Game.findById(this.id)
         .then(this.applyMoveFn());
 };
 
