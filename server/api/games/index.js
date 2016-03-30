@@ -17,7 +17,7 @@ function _serviceReq(req, method, paramName) {
 router
     .route('/')
     .get(function(req, res, next) {
-        _serviceReq(req, 'index', 'body')
+        _serviceReq(req, 'index', 'query')
             .then(function(payload) {
                 res.status(200).json(payload);
             }).catch(next);
@@ -46,7 +46,7 @@ router
 
 router
     .route('/:id/ships')
-    .post(function(req, res, next) {
+    .put(function(req, res, next) {
         _serviceReq(req, 'placeShips', 'body.coords')
             .then(function(payload) {
                 res.status(201).json(payload);
@@ -55,7 +55,7 @@ router
 
 router
     .route('/:id/move')
-    .post(function(req, res, next) {
+    .put(function(req, res, next) {
         _serviceReq(req, 'move', 'body.coords')
             .then(function(payload) {
                 res.status(200).json(payload);
