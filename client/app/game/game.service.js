@@ -6,13 +6,6 @@
     function gameService($resource) {
         var id;
         var coordNames = ['a','b','c','d','e'];
-        var arrayIndicies = {
-            a: 0,
-            b: 1,
-            c: 2,
-            d: 3,
-            e: 4
-        };
         var resource = $resource(apiUrl, {}, {
             newGame: {
                 method: 'PUT',
@@ -69,8 +62,11 @@
                 .$promise
                 .then(setIdAndReturnData);
         };
-        this.getGame = function() {
-            return resource.getGame({id: id}).$promise;
+        this.getGame = function(_id) {
+            return resource
+                .getGame({id: _id})
+                .$promise
+                .then(setIdAndReturnData);
         };
         this.endGame = function() {
             return resource.endGame({id: id}).$promise;
@@ -91,22 +87,9 @@
                 .$promise;
         };
 
-        this.getArrIndices = function (row, col) {
-            return arrayIndices[row] + '.' + arrayIndices[col];
-        };
-
-        // this.convertBoard = function(board) {
-        //     var boardArr = [];
-        //     _.forEach(coordNames, function(key1, index1) {
-        //         _.forEach(coordNames, function(key2, index2) {
-        //             boardArr[index2][index1] = board[key2][key1];
-        //         });
-        //     });
-        //     return boardArr;
-        // };
-
         this.getCoords = function(row, col) {
             return (coordNames[row] + coordNames[col]);
         };
+        return this;
     }
 })();
