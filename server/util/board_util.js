@@ -16,6 +16,11 @@ function getPath(name, coords) {
 //the name, and returning a function that accepts coords
 var coordMapFn = _.curry(getPath);
 
+function getResult(data, name, coords) {
+    var path = getPath(name, coords);
+    return _.get(data, path);
+}
+
 function getCoords(board, test) {
     var testObj = board;
     if (_.isFunction(board.toObject)) {
@@ -74,7 +79,7 @@ function okToMove(game, playerTurn) {
     var offset = playerTurn
      ? 0
      : 1;
-    var testValue = countMoves(game.playerBoard) - countMoves(game.cpuBoard);
+    var testValue = countMoves(game.cpuBoard) - countMoves(game.playerBoard);
     return testValue === offset;
 }
 
@@ -84,7 +89,7 @@ function prepGameViewForClient(game) {
     if (game.cpuBoard) {
         shipCoords = getCoords(game.cpuBoard, 'S');
         _.forEach(shipCoords, function(coord) {
-            _.unset(clientGame, getPath('cpu', coord));
+            _.set(clientGame, getPath('cpu', coord), '');
         });
     }
     return clientGame;
@@ -94,6 +99,7 @@ module.exports = {
     getPath: getPath,
     coordMapFn: coordMapFn,
     getCoords: getCoords,
+    getResult: getResult,
     randomCoords: randomCoords,
     okToMove: okToMove,
     prepGameViewForClient: prepGameViewForClient,
