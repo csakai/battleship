@@ -1,4 +1,6 @@
 <h2>{{name}}</h2>
+
+{{options.disabled | json}}
 <div class="row board"
     ng-init="rowIndex = $index"
     ng-repeat="row in data track by $index">
@@ -13,7 +15,7 @@
         }"
         ng-repeat="box in row track by $index"
         ng-click="func({row: rowIndex, col: $index})"
-        ng-disabled="!clickable">
+        ng-disabled="options.disabled">
     </div>
 </div>
 <div class="row">

@@ -7,7 +7,7 @@
                 name: '@',
                 func: '&',
                 data: '=',
-                clickable: '='
+                options: '='
             },
             templateUrl: '/src/game/board_template.html'
         };

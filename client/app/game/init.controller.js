@@ -18,6 +18,12 @@
             ['', '', '', '', '']
         ];
         $scope.activeGame = false;
+        $scope.cBoard = {
+            disabled: true
+        };
+        $scope.pBoard = {
+            disabled: false
+        };
         function _setBoard(data) {
             _.forEach(coordNames, function (key1, index1) {
                 _.forEach(coordNames, function(key2, index2) {
@@ -25,7 +31,6 @@
                     $scope.playerBoard[index2][index1] = data.playerBoard[key2][key1];
                 });
             });
-            $scope.playerTurn = data.playerTurn;
             return;
         }
         $scope.getGame = function(gameData) {
@@ -42,6 +47,8 @@
                 .then(function(data) {
                     $scope.id = $scope.gameId;
                     $scope.activeGame = true;
+                    $scope.pBoard.disabled = true;
+                    $scope.cBoard.disabled = !data.playerTurn;
                     return data;
                 }).then(_setBoard);
         };

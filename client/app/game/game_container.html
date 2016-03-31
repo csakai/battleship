@@ -5,14 +5,14 @@
             <board name="cpu"
                 func="game.move(row, col)"
                 data="cpuBoard"
-                clickable="game.boardSet && !playerTurn">
+                options="cBoard">
             </board>
         </div>
         <div class="col-md-6">
             <board name="player"
                 func="game.addCoord(row, col)"
                 data="playerBoard"
-                clickable="!game.boardSet">
+                options="pBoard">
             </board>
         </div>
     </div>
@@ -30,7 +30,7 @@
             </button>
             <button class="btn btn-warning"
                 ng-click="game.requestCpuMove()"
-                ng-disabled="playerTurn && !game.error">
+                ng-disabled="!pBoard.disabled && game.error">
                 Resend CPU move request
             </button>
         </div>

@@ -4,8 +4,7 @@
     function gameCtrl($scope, gameService) {
         var vm = this;
         var startingCoords = [];
-        vm.boardSet = false;
-        $scope.playerTurn = true;
+
         vm.endGame = function() {
             gameService.endGame();
         };
@@ -24,20 +23,16 @@
                 return;
             }
             gameService.setBoard(startingCoords)
-                .then($scope.getGame)
-                .then(function() {
-                    vm.boardSet = true;
-                    return;
-                });
+                .then($scope.getGame);
         };
 
         function _setCpuTurn(data) {
-            $scope.playerTurn = false;
+            $scope.cBoard.disabled = true;
             return data;
         }
 
         function _setPlayerTurn(data) {
-            $scope.playerTurn = true;
+            $scope.cBoard.disabled = false;
             return data;
         }
 
