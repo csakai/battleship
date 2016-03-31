@@ -1,10 +1,11 @@
 <div class="container" ng-controller="gameCtrl as game">
     <div class="row" ng-if="activeGame">
+        <h1>Game #{{id}}</h1>
         <div class="col-md-6">
             <board name="cpu"
                 func="game.move(row, col)"
                 data="cpuBoard"
-                clickable="game.boardSet && !game.turn">
+                clickable="game.boardSet && !playerTurn">
             </board>
         </div>
         <div class="col-md-6">
@@ -29,7 +30,7 @@
             </button>
             <button class="btn btn-warning"
                 ng-click="game.requestCpuMove()"
-                ng-disabled="game.turn && !game.error">
+                ng-disabled="playerTurn && !game.error">
                 Resend CPU move request
             </button>
         </div>
