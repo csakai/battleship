@@ -1,6 +1,7 @@
-<h2>{{name}}</h2>
+<h2 ng-class="options.turn
+    ? 'text-success'
+    : 'text-danger'">{{name}}</h2>
 
-{{options.disabled | json}}
 <div class="row board"
     ng-init="rowIndex = $index"
     ng-repeat="row in data track by $index">
