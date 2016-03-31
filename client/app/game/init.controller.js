@@ -22,9 +22,10 @@
             _.forEach(coordNames, function (key1, index1) {
                 _.forEach(coordNames, function(key2, index2) {
                     $scope.cpuBoard[index2][index1] = data.cpuBoard[key2][key1];
-                    $scope.playerBoard[index2][index1] = data.cpuBoard[key2][key1];
+                    $scope.playerBoard[index2][index1] = data.playerBoard[key2][key1];
                 });
             });
+            $scope.playerTurn = data.playerTurn;
             return;
         }
         $scope.getGame = function(gameData) {
