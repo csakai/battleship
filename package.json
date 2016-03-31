@@ -15,6 +15,9 @@
     "less": "^2.6.1",
     "wiredep": "^4.0.0"
   },
+  "engines": {
+    "node" : ">=0.10.40"
+  },
   "scripts": {
     "start": "node ./server/index.js",
     "postinstall": "./node_modules/bower/bin/bower install"
