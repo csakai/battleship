@@ -62,7 +62,7 @@ function _constructMoveMethod(name) {
                 error;
             if (properTurn && notFiredAt) {
                 _.set(self, path, _newVal(val));
-                self.playerTurn = ('cpu' === name);
+                self.playerTurn = ('player' === name);
                 resolve(self);
             } else {
                 error = new Error(!notFiredAt

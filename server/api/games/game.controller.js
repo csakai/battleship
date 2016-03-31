@@ -6,10 +6,10 @@ function GameCtrl(id) {
     if (id) {
         this.id = id;
     }
-    this.moveProps = ['active', 'col', 'playerTurn', 'result', 'row', 'win'];
 }
+GameCtrl.prototype.moveProps = ['active', 'col', 'playerTurn', 'result', 'row', 'win'];
 
-GameCtrl.prototype.returnMoveData = function returnMoveData() {
+function returnMoveData(data) {
     return _.pick(this, this.moveProps);
 };
 
@@ -45,13 +45,13 @@ GameCtrl.prototype.placeShips = function placeShips(coords) {
 };
 
 GameCtrl.prototype.move = function move(coord) {
-    this.coords = coord;
     var self = this;
+    this.coords = coord;
     return Game.findById(this.id)
         .then(function(data) {
             return data.playerMove(coord);
-        }).then(this.applyMoveFn('cpu'))
-        .then(this.returnMoveData);
+        }).then(self.applyMoveFn('cpu'))
+        .then(returnMoveData.bind(self));
 };
 
 GameCtrl.prototype.cpuMove = function getMove() {
@@ -61,15 +61,15 @@ GameCtrl.prototype.cpuMove = function getMove() {
             var coords = util.randomCoords(data.playerBoard);
             self.coords = coords[0]
             return data.cpuMove(coords);
-        }).then(this.applyMoveFn('player'))
-        .then(this.returnMoveData);
+        }).then(self.applyMoveFn('player'))
+        .then(returnMoveData.bind(self));
 };
 
 GameCtrl.prototype.endGame = function endGame() {
     var self = this;
     return Game.findById(this.id)
-        .then(this.applyMoveFn())
-        .then(this.returnMoveData);
+        .then(self.applyMoveFn())
+        .then(returnMoveData.bind(self));
 };
 
 GameCtrl.prototype.applyMoveFn = function applyMove(name) {
@@ -91,7 +91,7 @@ GameCtrl.prototype.applyMoveFn = function applyMove(name) {
             self.col = self.coords.charAt(1);
             self.result = util.getResult(data, name, self.coords);
         }
-        return data.save();
+        return data.update(data);
     }
 }
 
