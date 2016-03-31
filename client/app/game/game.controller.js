@@ -1,7 +1,7 @@
 (function() {
     var app = angular.module('battleship');
-    app.controller('gameCtrl', ['$scope', 'gameService', gameCtrl]);
-    function gameCtrl($scope, gameService) {
+    app.controller('gameCtrl', ['$q', '$scope', 'gameService', gameCtrl]);
+    function gameCtrl($q, $scope, gameService) {
         var vm = this;
         var startingCoords = [];
 
@@ -39,11 +39,8 @@
         function _handleError(err) {
             // var modal = /*placeholder*/
             if (!err.status) {
-                console.log('The game state changed.');
                 console.log('You ' + (err.data.win ? 'won!' : 'lost!'));
-                // return gameModalService
-                //     .message(err.data);
-            } else if (err.status) {
+            } else {
                 console.log('an error occurred');
                 console.log(err);
                 // return gameModalService
@@ -64,41 +61,39 @@
             }
         };
 
+        function _applyResultToBoard(boardName, row, col, result) {
+            _.set($scope, gameService.getPath(boardName, row, col), result);
+        }
+
+        function _handleBoardOf(name) {
+            return function handleTurn(data) {
+                _applyResultToBoard(name+'Board', data.row, data.col, data.result);
+                if (!data.active) {
+                    $scope.win = data.win;
+                    return $q.reject({
+                        data: {
+                            win: data.win
+                        }
+                    });
+                } else {
+                    return;
+                }
+            }
+        }
+
         vm.requestCpuMove = function() {
             return gameService.cpuMove()
                 .then(_setPlayerTurn)
-                .then(function(data) {
-                    vm.win = data.win;
-                    _applyResultToBoard('playerBoard', data.row, data.col, data.result);
-                    if (_.isBoolean(vm.win) && !vm.win) {
-                        throw {
-                            data: "lose"
-                        };
-                    } else {
-                        return;
-                    }
-                }).catch(_handleError);
-        }
-
-        function _applyResultToBoard(boardName, row, col, result) {
-            _.set($scope, gameService.getPath(boardName, row, col), result);
+                .then(_handleBoardOf('player'))
+                .catch(_handleError);
         }
 
         vm.move = function(row, col) {
             var coords = gameService.getCoords(row, col);
             _setCpuTurn();
             gameService.move(coords)
-                .then(function(data) {
-                    vm.win = data.win;
-                    _applyResultToBoard('cpuBoard', data.row, data.col, data.result);
-                    if (vm.win) {
-                        throw {
-                            data: "win"
-                        };
-                    } else {
-                        return;
-                    }
-                }).then(vm.requestCpuMove)
+                .then(_handleBoardOf('cpu'))
+                .then(vm.requestCpuMove)
                 .catch(_handleError);
         }
 
