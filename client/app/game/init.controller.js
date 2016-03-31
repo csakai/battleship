@@ -31,6 +31,9 @@
                     $scope.playerBoard[index2][index1] = data.playerBoard[key2][key1];
                 });
             });
+            $scope.pBoard.disabled = $scope.playerBoard.toString().match(/[HMS]/);
+            $scope.gameEnded = !data.active;
+            $scope.win = data.win;
             return;
         }
         $scope.getGame = function(gameData) {
@@ -47,8 +50,9 @@
                 .then(function(data) {
                     $scope.id = $scope.gameId;
                     $scope.activeGame = true;
-                    $scope.pBoard.disabled = true;
                     $scope.cBoard.disabled = !data.playerTurn;
+                    $scope.pBoard.turn = data.playerTurn;
+                    $scope.cBoard.turn = !data.playerTurn;
                     return data;
                 }).then(_setBoard);
         };
