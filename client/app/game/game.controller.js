@@ -4,6 +4,8 @@
     function gameCtrl($scope, gameService) {
         var vm = this;
         var startingCoords = [];
+        vm.boardSet = false;
+        $scope.playerTurn = true;
         vm.endGame = function() {
             gameService.endGame();
         };
@@ -16,33 +18,27 @@
                 }).then($scope.getGame);
         };
 
-        vm.setBoard = function(coords) {
-            gameService.setBoard(coords);
+        vm.setBoard = function() {
+            if (startingCoords.length < 10) {
+                console.log("Please add " + (10 - startingCoords.length) + " more ships.");
+                return;
+            }
+            gameService.setBoard(startingCoords)
+                .then($scope.getGame)
+                .then(function() {
+                    vm.boardSet = true;
+                    return;
+                });
         };
 
         function _setCpuTurn(data) {
-            vm.turn = false;
+            $scope.playerTurn = false;
             return data;
         }
 
         function _setPlayerTurn(data) {
-            vm.turn = true;
+            $scope.playerTurn = true;
             return data;
-        }
-
-        function _handleTurn(boardName) {
-            return function handleTurn(data) {
-                var playerWin = boardName === 'cpuBoard';
-                vm.win = data.win;
-                _.merge(vm[boardName], data[boardName]);
-                if (vm.win === playerWin) {
-                    throw {
-                        data: playerWin ? 'win' : 'lose'
-                    };
-                } else {
-                    return;
-                }
-            };
         }
 
         function _handleError(err) {
@@ -52,7 +48,7 @@
                 console.log('You ' + (err.data.win ? 'won!' : 'lost!'));
                 // return gameModalService
                 //     .message(err.data);
-            } else if (err.status === 500) {
+            } else if (err.status) {
                 console.log('an error occurred');
                 console.log(err);
                 // return gameModalService
@@ -65,9 +61,9 @@
             var coords = gameService.getCoords(row, col);
             var index = _.indexOf(startingCoords, coords);
             if (index > -1) {
-                startingCoords.splice(index, 0);
+                startingCoords.splice(index, 1);
                 $scope.playerBoard[row][col] = '';
-            } else {
+            } else if (startingCoords.length < 10) {
                 startingCoords.push(coords);
                 $scope.playerBoard[row][col] = 'S';
             }
@@ -78,7 +74,7 @@
                 .then(_setPlayerTurn)
                 .then(function(data) {
                     vm.win = data.win;
-                    $scope.playerBoard[data.row][data.col] = data.result;
+                    _applyResultToBoard('playerBoard', data.row, data.col, data.result);
                     if (_.isBoolean(vm.win) && !vm.win) {
                         throw {
                             data: "lose"
@@ -89,13 +85,17 @@
                 }).catch(_handleError);
         }
 
+        function _applyResultToBoard(boardName, row, col, result) {
+            _.set($scope, gameService.getPath(boardName, row, col), result);
+        }
+
         vm.move = function(row, col) {
             var coords = gameService.getCoords(row, col);
             _setCpuTurn();
             gameService.move(coords)
                 .then(function(data) {
                     vm.win = data.win;
-                    $scope.cpuBoard[row][col] = data.result;
+                    _applyResultToBoard('cpuBoard', data.row, data.col, data.result);
                     if (vm.win) {
                         throw {
                             data: "win"
