@@ -35,12 +35,24 @@
                 });
             });
             var boardSet = $scope.playerBoard.toString().match(/[HMS]/);
+            if (boardSet) {
+                $scope.handleTurnMessages();
+            }
             $scope.pBoard.disabled = boardSet;
             $scope.cBoard.disabled |= !boardSet;
             $scope.gameEnded = !data.active;
             $scope.win = data.win;
             return;
         }
+
+        $scope.handleTurnMessages = function handleTurnMessages() {
+            var newMsg = "It's ";
+            newMsg += $scope.cBoard.disabled
+             ? "the cpu's turn."
+             : "your turn. Click on the CPU's board.";
+            $scope.message = newMsg;
+        };
+
         $scope.getGame = function(gameData) {
             var func;
             var param;

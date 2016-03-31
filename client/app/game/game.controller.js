@@ -36,6 +36,7 @@
             $scope.cBoard.disabled = !data.playerTurn;
             $scope.cBoard.turn = !data.playerTurn;
             $scope.pBoard.turn = data.playerTurn;
+            $scope.handleTurnMessages();
             return data;
         }
 
