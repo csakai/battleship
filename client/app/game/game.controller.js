@@ -1,7 +1,7 @@
 (function() {
     var app = angular.module('battleship');
-    app.controller('gameCtrl', ['$q', '$scope', 'gameService', gameCtrl]);
-    function gameCtrl($q, $scope, gameService) {
+    app.controller('gameCtrl', ['$q', '$scope', '$timeout', 'gameService', gameCtrl]);
+    function gameCtrl($q, $scope, $timeout, gameService) {
         var vm = this;
         var startingCoords = [];
 
@@ -26,20 +26,18 @@
                 .then($scope.getGame);
         };
 
-        function _setCpuTurn(data) {
-            $scope.cBoard.disabled = true;
-            return data;
-        }
-
-        function _setPlayerTurn(data) {
-            $scope.cBoard.disabled = false;
+        function _setTurn(data) {
+            $scope.cBoard.disabled = !data.playerTurn;
+            $scope.cBoard.turn = !data.playerTurn;
+            $scope.pBoard.turn = data.playerTurn;
             return data;
         }
 
         function _handleError(err) {
             // var modal = /*placeholder*/
             if (!err.status) {
-                console.log('You ' + (err.data.win ? 'won!' : 'lost!'));
+                $scope.cBoard.disabled = true;
+                $scope.gameEnded = true;
             } else {
                 console.log('an error occurred');
                 console.log(err);
@@ -81,19 +79,23 @@
             }
         }
 
+        function _delayCpuMoveRequest() {
+            return $timeout(vm.requestCpuMove, 2500);
+        }
+
         vm.requestCpuMove = function() {
             return gameService.cpuMove()
-                .then(_setPlayerTurn)
+                .then(_setTurn)
                 .then(_handleBoardOf('player'))
                 .catch(_handleError);
         }
 
         vm.move = function(row, col) {
             var coords = gameService.getCoords(row, col);
-            _setCpuTurn();
+            _setTurn({playerTurn: false});
             gameService.move(coords)
                 .then(_handleBoardOf('cpu'))
-                .then(vm.requestCpuMove)
+                .then(_delayCpuMoveRequest)
                 .catch(_handleError);
         }
 
