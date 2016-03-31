@@ -86,6 +86,7 @@ GameCtrl.prototype.applyMoveFn = function applyMove(name) {
         }
         _.assign(data, updateDoc);
         _.assign(self, updateDoc);
+        self.active = data.active;
         if (self.coords) {
             self.row = self.coords.charAt(0);
             self.col = self.coords.charAt(1);
