@@ -83,12 +83,18 @@
         };
         this.cpuMove = function() {
             return resource
-                .cpuMove({id: id})
+                .cpuMove({id: id}, {})
                 .$promise;
         };
 
         this.getCoords = function(row, col) {
             return (coordNames[row] + coordNames[col]);
+        };
+
+        this.getPath = function(boardName, row, col) {
+            row = _.indexOf(coordNames, row);
+            col = _.indexOf(coordNames, col);
+            return [boardName, row, col].join('.');
         };
         return this;
     }
