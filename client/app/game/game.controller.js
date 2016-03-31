@@ -5,6 +5,11 @@
         var vm = this;
         var startingCoords = [];
 
+        vm.dismissError = function dismissError() {
+            $scope.error = false;
+            $scope.errMsg = '';
+        };
+
         vm.endGame = function() {
             gameService.endGame();
         };
@@ -19,7 +24,8 @@
 
         vm.setBoard = function() {
             if (startingCoords.length < 10) {
-                console.log("Please add " + (10 - startingCoords.length) + " more ships.");
+                $scope.error = true;
+                $scope.errMsg = "Please add " + (10 - startingCoords.length) + " more ships.";
                 return;
             }
             gameService.setBoard(startingCoords)
@@ -39,8 +45,8 @@
                 $scope.cBoard.disabled = true;
                 $scope.gameEnded = true;
             } else {
-                console.log('an error occurred');
-                console.log(err);
+                vm.errMsg = err.data;
+                vm.error = true;
             }
         }
 

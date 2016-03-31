@@ -1,6 +1,16 @@
 <div class="container" ng-controller="gameCtrl as game">
     <div class="row" ng-if="activeGame">
         <h1>Game #{{id}}</h1>
+        <div class="alert" id="instuctions"
+            ng-class="error
+                ? 'alert-danger'
+                : 'alert-info'">
+            {{errMsg || message}}
+            <span class="glyphicon glyphicon-remove"
+                ng-if="error"
+                ng-click="game.dismissError()">
+            </span>
+        </div>
         <div class="alert"
             ng-if="gameEnded"
             ng-class="win
@@ -32,12 +42,12 @@
             </button>
             <button class="btn btn-success"
                 ng-click="game.setBoard()"
-                ng-disabled="pBoard.disabled">
+                ng-if="!pBoard.disabled">
                 Set Board
             </button>
             <button class="btn btn-warning"
                 ng-click="game.requestCpuMove()"
-                ng-disabled="cBoard.disabled && !game.error">
+                ng-disabled="!cBoard.disabled && !error">
                 Resend CPU move request
             </button>
         </div>

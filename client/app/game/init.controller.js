@@ -24,6 +24,9 @@
         $scope.pBoard = {
             disabled: false
         };
+        $scope.error = false;
+        $scope.errMsg = '';
+        $scope.message = "Click on coordinates on your board to place ships";
         function _setBoard(data) {
             _.forEach(coordNames, function (key1, index1) {
                 _.forEach(coordNames, function(key2, index2) {
@@ -31,7 +34,9 @@
                     $scope.playerBoard[index2][index1] = data.playerBoard[key2][key1];
                 });
             });
-            $scope.pBoard.disabled = $scope.playerBoard.toString().match(/[HMS]/);
+            var boardSet = $scope.playerBoard.toString().match(/[HMS]/);
+            $scope.pBoard.disabled = boardSet;
+            $scope.cBoard.disabled |= !boardSet;
             $scope.gameEnded = !data.active;
             $scope.win = data.win;
             return;
