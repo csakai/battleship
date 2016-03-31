@@ -10,6 +10,7 @@ var GameSchema = new Schema({
     playerBoard: { type: Object, default: defaultBoard },
     cpuBoard: { type: Object, default: defaultBoard },
     active: { type: Boolean, default: true },
+    playerTurn: { type: Boolean, default: true },
     win: Boolean
 }, {
     minimize: false,
@@ -61,6 +62,7 @@ function _constructMoveMethod(name) {
                 error;
             if (properTurn && notFiredAt) {
                 _.set(self, path, _newVal(val));
+                self.playerTurn = ('cpu' === name);
                 resolve(self);
             } else {
                 error = new Error(!notFiredAt
