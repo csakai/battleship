@@ -4,7 +4,8 @@
         <div class="alert" id="instuctions"
             ng-class="error
                 ? 'alert-danger'
-                : 'alert-info'">
+                : 'alert-info'"
+            ng-if="!gameEnded">
             {{errMsg || message}}
             <span class="glyphicon glyphicon-remove"
                 ng-if="error"
@@ -37,7 +38,8 @@
     <div class="row">
         <div class="btn-group" ng-if="activeGame">
             <button class="btn btn-danger"
-                ng-click="game.endGame()">
+                ng-click="game.endGame()"
+                ng-if="!gameEnded">
                 Surrender!
             </button>
             <button class="btn btn-success"
@@ -51,7 +53,7 @@
                 Resend CPU move request
             </button>
         </div>
-        <div class="btn-group" ng-if="!activeGame">
+        <div class="btn-group" ng-if="!activeGame || gameEnded">
             <button class="btn btn-success"
                 ng-click="game.newGame()">
                 New Game!

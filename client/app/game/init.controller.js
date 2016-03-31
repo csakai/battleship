@@ -1,8 +1,9 @@
 (function() {
     var app = angular.module('battleship');
-    app.controller('initCtrl', ['$q', '$scope', 'gameService', initCtrl]);
-    function initCtrl($q, $scope, gameService) {
+    app.controller('initCtrl', ['$location', '$q', '$scope', 'gameService', initCtrl]);
+    function initCtrl($location, $q, $scope, gameService) {
         var coordNames = ['a','b','c','d','e'];
+        $scope.gameId = '';
         $scope.cpuBoard = [
             ['', '', '', '', ''],
             ['', '', '', '', ''],
@@ -26,7 +27,6 @@
         };
         $scope.error = false;
         $scope.errMsg = '';
-        $scope.message = "Click on coordinates on your board to place ships";
         function _setBoard(data) {
             _.forEach(coordNames, function (key1, index1) {
                 _.forEach(coordNames, function(key2, index2) {
@@ -37,12 +37,18 @@
             var boardSet = $scope.playerBoard.toString().match(/[HMS]/);
             if (boardSet) {
                 $scope.handleTurnMessages();
+            } else if (!$scope.message) {
+                _setBoardMessage();
             }
             $scope.pBoard.disabled = boardSet;
             $scope.cBoard.disabled |= !boardSet;
             $scope.gameEnded = !data.active;
             $scope.win = data.win;
             return;
+        }
+
+        function _setBoardMessage() {
+            $scope.message = "Click on coordinates on your board to place ships";
         }
 
         $scope.handleTurnMessages = function handleTurnMessages() {
@@ -54,6 +60,7 @@
         };
 
         $scope.getGame = function(gameData) {
+            var id;
             var func;
             var param;
             if (gameData) {
@@ -62,10 +69,16 @@
             } else {
                 func = gameService.getGame;
                 param = $scope.gameId;
+                id = $scope.gameId;
             }
             func(param)
                 .then(function(data) {
-                    $scope.id = $scope.gameId;
+                    if (id) {
+                        $scope.id = id;
+                    } else {
+                        $scope.gameId = '';
+                    }
+                    $scope.message = '';
                     $scope.activeGame = true;
                     $scope.cBoard.disabled = !data.playerTurn;
                     $scope.pBoard.turn = data.playerTurn;
@@ -73,5 +86,10 @@
                     return data;
                 }).then(_setBoard);
         };
+
+        if ($location.search().id) {
+            $scope.gameId = $location.search().id;
+            $scope.getGame();
+        }
     }
 })();

@@ -4,14 +4,16 @@
     function gameCtrl($q, $scope, $timeout, gameService) {
         var vm = this;
         var startingCoords = [];
-
         vm.dismissError = function dismissError() {
             $scope.error = false;
             $scope.errMsg = '';
         };
 
         vm.endGame = function() {
-            gameService.endGame();
+            gameService.endGame()
+                .then(function(data) {
+                    return _handleError({data: data});
+                });
         };
 
         vm.newGame = function() {
@@ -46,8 +48,12 @@
                 $scope.cBoard.disabled = true;
                 $scope.gameEnded = true;
             } else {
-                vm.errMsg = err.data;
-                vm.error = true;
+                $scope.errMsg = err.data;
+                if (err.status === 400) {
+                    $scope.errMsg += '. Something went wrong. Try refreshing the page and reloading your game using the provided ID: ';
+                    $scope.errMsg += $scope.id;
+                }
+                $scope.error = true;
             }
         }
 
