@@ -41,9 +41,6 @@
             } else {
                 console.log('an error occurred');
                 console.log(err);
-                // return gameModalService
-                //     .message(err.data)
-                //     .
             }
         }
 
@@ -80,7 +77,7 @@
         }
 
         function _delayCpuMoveRequest() {
-            return $timeout(vm.requestCpuMove, 2500);
+            return $timeout(vm.requestCpuMove, 1000);
         }
 
         vm.requestCpuMove = function() {
