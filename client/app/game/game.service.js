@@ -1,19 +1,16 @@
 (function() {
     var app = angular.module('battleship');
-    var rootApiUrl = '/api/games/';
-    var apiUrl = rootApiUrl + ':id/:path';
+    var apiUrl = '/api/games/:id/:path';
     app.factory('gameService', ['$resource', gameService]);
     function gameService($resource) {
         var id;
         var coordNames = ['a','b','c','d','e'];
         var resource = $resource(apiUrl, {}, {
             newGame: {
-                method: 'PUT',
-                url: rootApiUrl
+                method: 'PUT'
             },
             getGames: {
-                method: 'GET',
-                url: rootApiUrl
+                method: 'GET'
             },
             getGame: {
                 method: 'GET'

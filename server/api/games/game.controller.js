@@ -14,7 +14,12 @@ function returnMoveData(data) {
 };
 
 GameCtrl.prototype.index = function index(query) {
-    return Game.find(query, '-cpuBoard -playerBoard');
+    return Game.find(query, '-cpuBoard -playerBoard')
+        .then(function(data) {
+            return {
+                games: data
+            };
+        });
 };
 
 GameCtrl.prototype.newGame = function newGame() {
